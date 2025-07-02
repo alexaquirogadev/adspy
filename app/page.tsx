@@ -3,42 +3,13 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, Check, ArrowDown } from 'lucide-react';
 import { motion } from 'framer-motion';
+import LandingHeader from '@/components/layout/LandingHeader';
+import LandingFooter from '@/components/layout/LandingFooter';
 
 const LandingPage: React.FC = () => {
   return (
     <div className="min-h-screen">
-      <header className="border-b-2 border-black bg-white sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <div className="bg-black text-primary font-bold text-xl p-2 rounded">
-              AL
-            </div>
-            <span className="text-xl font-bold">AdSpy Lite</span>
-          </div>
-          
-          <nav className="hidden md:flex items-center gap-6">
-            <a href="#how-it-works" className="font-medium hover:text-secondary transition-colors">
-              Cómo funciona
-            </a>
-            <a href="#pricing" className="font-medium hover:text-secondary transition-colors">
-              Precios
-            </a>
-            <a href="#faq" className="font-medium hover:text-secondary transition-colors">
-              FAQ
-            </a>
-          </nav>
-          
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="hidden md:block font-medium hover:text-secondary transition-colors">
-              Iniciar sesión
-            </Link>
-            <Link href="/register" className="dopamine-btn-secondary">
-              Empezar
-            </Link>
-          </div>
-        </div>
-      </header>
-      
+      <LandingHeader />
       <main>
         {/* Hero Section */}
         <section className="relative bg-white py-16 md:py-24 overflow-hidden border-b-2 border-black">
@@ -61,7 +32,7 @@ const LandingPage: React.FC = () => {
                   placeholder="Ingresa tu email para empezar"
                   className="w-full md:w-auto px-6 py-3 rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-secondary"
                 />
-                <Link href="/register" className="dopamine-btn-secondary w-full md:w-auto">
+                <Link href="/auth/login" className="dopamine-btn-secondary w-full md:w-auto">
                   <span>Empezar por 1€</span>
                   <ArrowRight className="ml-2" size={18} />
                 </Link>
@@ -315,7 +286,7 @@ const LandingPage: React.FC = () => {
                   
                   <div className="px-6 pb-6 md:px-8 md:pb-8">
                     <Link 
-                      href="/register" 
+                      href="/auth/login" 
                       className={`w-full py-3 px-4 rounded-xl border-2 border-black font-bold text-center transition-all duration-300 ${
                         plan.highlight 
                           ? 'bg-secondary text-white hover:bg-secondary-hover shadow-retro' 
@@ -341,65 +312,14 @@ const LandingPage: React.FC = () => {
               <p className="text-lg text-neutral-700 mb-8">
                 Únete a miles de profesionales del marketing que ya están mejorando sus estrategias publicitarias con AdSpy Lite
               </p>
-              <Link href="/register" className="dopamine-btn-secondary text-lg px-8 py-4">
+              <Link href="/auth/login" className="dopamine-btn-secondary text-lg px-8 py-4">
                 Empezar por solo 1€
               </Link>
             </div>
           </div>
         </section>
       </main>
-      
-      <footer className="bg-black text-white py-12">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-            <div>
-              <h3 className="font-bold mb-4">Producto</h3>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-neutral-400 hover:text-white transition-colors">Características</a></li>
-                <li><a href="#pricing" className="text-neutral-400 hover:text-white transition-colors">Precios</a></li>
-                <li><a href="#" className="text-neutral-400 hover:text-white transition-colors">Roadmap</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-bold mb-4">Recursos</h3>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-neutral-400 hover:text-white transition-colors">Blog</a></li>
-                <li><a href="#" className="text-neutral-400 hover:text-white transition-colors">Tutoriales</a></li>
-                <li><a href="#faq" className="text-neutral-400 hover:text-white transition-colors">FAQ</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-bold mb-4">Empresa</h3>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-neutral-400 hover:text-white transition-colors">Sobre nosotros</a></li>
-                <li><a href="#" className="text-neutral-400 hover:text-white transition-colors">Contacto</a></li>
-                <li><a href="#" className="text-neutral-400 hover:text-white transition-colors">Afiliados</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-bold mb-4">Legal</h3>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-neutral-400 hover:text-white transition-colors">Términos</a></li>
-                <li><a href="#" className="text-neutral-400 hover:text-white transition-colors">Privacidad</a></li>
-                <li><a href="#" className="text-neutral-400 hover:text-white transition-colors">Cookies</a></li>
-              </ul>
-            </div>
-          </div>
-          
-          <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-neutral-800">
-            <div className="flex items-center gap-2 mb-4 md:mb-0">
-              <div className="bg-primary text-black font-bold text-xl p-2 rounded">
-                AL
-              </div>
-              <span className="text-xl font-bold">AdSpy Lite</span>
-            </div>
-            
-            <p className="text-neutral-400 text-sm">
-              © {new Date().getFullYear()} AdSpy Lite. Todos los derechos reservados.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <LandingFooter />
     </div>
   );
 };

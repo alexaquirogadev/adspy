@@ -1,6 +1,7 @@
 import React from 'react';
-import { Search, Star, User, BarChart, LogOut, ChevronLeft, Trophy, Target } from 'lucide-react';
+import { Search, Star, User, BarChart, ChevronLeft, Trophy, Target } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
+import LogoutButton from '@/components/auth/LogoutButton';
 
 type ViewType = 'search' | 'ranking' | 'problems' | 'favorites' | 'account' | 'admin';
 
@@ -96,16 +97,10 @@ const Sidebar: React.FC<SidebarProps> = ({
       </nav>
       
       <div className="p-4 border-t-2 border-black mt-auto">
-        <div 
-          onClick={onClose}
-          className="flex items-center gap-3 p-3 rounded-xl text-neutral-700 hover:bg-neutral-100 transition-all duration-300 cursor-pointer"
-          title={isCollapsed ? "Cerrar sesión" : undefined}
-        >
-          <LogOut size={24} />
-          {!isCollapsed && (
-            <span className="font-medium">Cerrar sesión</span>
-          )}
-        </div>
+        <LogoutButton 
+          className={isCollapsed ? 'justify-center' : ''}
+          label={isCollapsed ? '' : 'Cerrar sesión'}
+        />
       </div>
     </div>
   );

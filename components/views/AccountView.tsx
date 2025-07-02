@@ -1,23 +1,37 @@
-import React from 'react';
+'use client';
+import { useState, useEffect } from 'react';
 import { User, CreditCard, Package, LogOut } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AnimatedBanner from '../shared/AnimatedBanner';
+import LogoutButton from '@/components/auth/LogoutButton';
+import { useUser } from '@/components/auth/UserContextProvider';
+import { useProfile } from '@/lib/useProfile';
+import EditProfileModal from '@/components/account/EditProfileModal';
+import Avatar from 'boring-avatars';
 
-const AccountView: React.FC = () => {
-  // Mock user data
-  const user = {
-    name: 'Juan Pérez',
-    email: 'juan@ejemplo.com',
-    subscription: {
-      plan: 'pro',
-      status: 'active',
-      renewDate: '2025-06-15',
-    },
-    memberSince: '2025-01-10',
-  };
-  
+const AccountView = () => {
+  const { user: authUser } = useUser();
+  const { data: profile } = useProfile(authUser?.id);
+  const [editOpen, setEditOpen] = useState(false);
+
+  // Si no tiene nombre -> fuerza completar
+  useEffect(() => {
+    if (profile && !profile.full_name) setEditOpen(true);
+  }, [profile]);
+
+  if (!authUser || !profile) return <p className="p-6">Cargando…</p>;
+
+  // Forzar a TypeScript a saber que profile está definido
+  const safeProfile = profile!;
+
+  const planColor = {
+    free: 'bg-neutral-200 text-neutral-700',
+    basic: 'bg-primary text-black',
+    pro: 'bg-secondary text-white',
+  }[safeProfile.plan as 'free' | 'basic' | 'pro'];
+
   const getPlanDetails = () => {
-    switch (user.subscription.plan) {
+    switch (safeProfile.plan) {
       case 'pro':
         return {
           name: 'Plan Pro',
@@ -58,7 +72,7 @@ const AccountView: React.FC = () => {
   const planDetails = getPlanDetails();
   
   return (
-    <div>
+    <>
       <AnimatedBanner 
         text="Gestiona tu perfil y suscripción"
         icon={<User />}
@@ -74,23 +88,35 @@ const AccountView: React.FC = () => {
           transition={{ duration: 0.3 }}
         >
           <div className="p-6 text-center border-b-2 border-black">
-            <div className="w-24 h-24 md:w-32 md:h-32 bg-black text-white rounded-full flex items-center justify-center text-4xl font-bold mx-auto mb-4">
-              {user.name.charAt(0)}
+            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full mx-auto mb-4 border-2 border-black overflow-hidden flex items-center justify-center bg-neutral-100">
+              <Avatar
+                size={128}
+                name={safeProfile.full_name || authUser.email}
+                variant="beam"
+                colors={["#ff006f", "#fff538", "#00d1ff", "#000000", "#f1f1f1"]}
+                square={false}
+              />
             </div>
-            <h2 className="text-xl md:text-2xl font-bold mb-1">{user.name}</h2>
-            <p className="text-neutral-600">{user.email}</p>
+            <h2 className="text-xl md:text-2xl font-bold mb-1">
+              {safeProfile.full_name || 'Sin nombre'}
+            </h2>
+            <p className="text-neutral-600">{authUser.email}</p>
           </div>
           
           <div className="p-6">
             <div className="mb-4">
               <h3 className="text-sm text-neutral-500 mb-1">Miembro desde</h3>
-              <p className="text-lg">{new Date(user.memberSince).toLocaleDateString()}</p>
+              <p className="text-lg">
+                {safeProfile.created_at ? new Date(safeProfile.created_at).toLocaleDateString() : '—'}
+              </p>
             </div>
             
             <div className="mb-6">
               <h3 className="text-sm text-neutral-500 mb-1">Suscripción actual</h3>
-              <div className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${planDetails.color}`}>
-                {planDetails.name}
+              <div
+                className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${planColor}`}
+              >
+                {(safeProfile.plan || 'free').toUpperCase()}
               </div>
             </div>
             
@@ -98,7 +124,10 @@ const AccountView: React.FC = () => {
               Actualizar suscripción
             </button>
             
-            <button className="w-full px-4 py-2 border-2 border-black rounded-xl hover:bg-neutral-100 transition-colors">
+            <button
+              className="w-full dopamine-btn-secondary mb-3"
+              onClick={() => setEditOpen(true)}
+            >
               Editar perfil
             </button>
           </div>
@@ -131,10 +160,6 @@ const AccountView: React.FC = () => {
                   </div>
                 </div>
                 <div className="p-4 bg-neutral-50 rounded-xl">
-                  <h3 className="text-sm text-neutral-500 mb-1">Próxima renovación</h3>
-                  <p className="text-lg">{new Date(user.subscription.renewDate).toLocaleDateString()}</p>
-                </div>
-                <div className="p-4 bg-neutral-50 rounded-xl">
                   <h3 className="text-sm text-neutral-500 mb-1">Método de pago</h3>
                   <p className="text-lg">Tarjeta terminada en 4242</p>
                 </div>
@@ -162,18 +187,21 @@ const AccountView: React.FC = () => {
                 <p className="text-sm text-neutral-600">Actualiza tu tarjeta o forma de pago</p>
               </div>
             </button>
-            
-            <button className="bg-white border-2 border-black rounded-xl p-4 text-left hover:bg-neutral-50 transition-colors shadow-retro flex items-center gap-4">
-              <LogOut size={24} />
-              <div>
-                <h3 className="font-semibold mb-1">Cerrar sesión</h3>
-                <p className="text-sm text-neutral-600">Salir de tu cuenta</p>
-              </div>
-            </button>
+            <LogoutButton 
+              className="bg-white border-2 border-black rounded-xl p-4 text-left hover:bg-neutral-50 transition-colors shadow-retro flex items-center gap-4"
+              label={<div><h3 className="font-semibold mb-1">Cerrar sesión</h3><p className="text-sm text-neutral-600">Salir de tu cuenta</p></div>}
+            />
           </div>
         </motion.div>
       </div>
-    </div>
+
+      {/* Modal */}
+      <EditProfileModal
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        userId={authUser.id}
+      />
+    </>
   );
 };
 

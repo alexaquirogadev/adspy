@@ -1,8 +1,15 @@
+"use client";
 import React, { useState, useRef, useEffect } from 'react';
 import { Bell, ChevronDown, Settings, User, LogOut, CreditCard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import NotificationsMenu from './NotificationsMenu';
+import { useRouter } from 'next/navigation';
+import { useUser } from '@/components/auth/UserContextProvider';
+import LoginButton from '@/components/auth/LoginButton';
+import LogoutButton from '@/components/auth/LogoutButton';
+import { useProfile } from '@/lib/useProfile';
+import Avatar from 'boring-avatars';
 
 interface HeaderProps {
   user?: {
@@ -29,6 +36,10 @@ const Header: React.FC<HeaderProps> = ({
   
   const notificationsRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const { user: authUser, loading } = useUser();
+  const router = useRouter();
+  const { data: profile } = useProfile(authUser?.id);
+  const plan = profile?.plan || 'free';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -82,8 +93,8 @@ const Header: React.FC<HeaderProps> = ({
         transition={{ duration: 0.2 }}
       >
         <div className="flex items-center gap-2 md:gap-3">
-          <div className={`hidden md:block px-2 py-1 rounded-full text-xs font-medium ${getPlanColor(user.subscription.plan)}`}>
-            {user.subscription.plan.toUpperCase()}
+          <div className={`hidden md:block px-2 py-1 rounded-full text-xs font-medium ${getPlanColor(plan)}`}>
+            {plan.toUpperCase()}
           </div>
           
           <div className="relative" ref={notificationsRef}>
@@ -130,86 +141,87 @@ const Header: React.FC<HeaderProps> = ({
             </AnimatePresence>
           </div>
           
-          <div className="relative" ref={userMenuRef}>
-            <button 
-              className="flex items-center gap-2 hover:bg-white/50 p-1.5 rounded-lg transition-colors"
-              onClick={() => setShowUserMenu(!showUserMenu)}
-            >
-              {user.avatarUrl ? (
-                <img 
-                  src={user.avatarUrl} 
-                  alt={user.name} 
-                  className="w-7 h-7 rounded-full border-2 border-black"
+          {loading ? (
+            <div className="w-8 h-8 rounded-full bg-neutral-200 animate-pulse" />
+          ) : !authUser ? (
+            <LoginButton className="btn-sm" label="Login" />
+          ) : (
+            <div className="relative" ref={userMenuRef}>
+              <button 
+                className="flex items-center gap-2 hover:bg-white/50 p-1.5 rounded-lg transition-colors"
+                onClick={() => setShowUserMenu(!showUserMenu)}
+              >
+                {profile ? (
+                  <Avatar
+                    size={28}
+                    name={profile.full_name || authUser.email}
+                    variant="beam"
+                    colors={["#ff006f", "#fff538", "#00d1ff", "#000000", "#f1f1f1"]}
+                    square={false}
+                  />
+                ) : (
+                  <div className="w-7 h-7 rounded-full bg-black text-white flex items-center justify-center border-2 border-black">
+                    <span className="text-xs font-semibold">{authUser.email?.charAt(0)?.toUpperCase() || 'U'}</span>
+                  </div>
+                )}
+                <ChevronDown 
+                  size={14} 
+                  className={`transition-transform duration-200 ${showUserMenu ? 'rotate-180' : ''}`}
                 />
-              ) : (
-                <div className="w-7 h-7 rounded-full bg-black text-white flex items-center justify-center border-2 border-black">
-                  <span className="text-xs font-semibold">{user.name.charAt(0)}</span>
-                </div>
-              )}
-              <ChevronDown 
-                size={14} 
-                className={`transition-transform duration-200 ${showUserMenu ? 'rotate-180' : ''}`}
-              />
-            </button>
+              </button>
 
-            <AnimatePresence>
-              {showUserMenu && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute right-0 mt-2 w-[calc(100vw-2rem)] md:w-56 bg-white border-2 border-black rounded-xl shadow-retro overflow-hidden"
-                  style={{ maxWidth: '280px' }}
-                >
-                  <div className="p-3 border-b border-neutral-200">
-                    <p className="font-medium truncate">{user.name}</p>
-                    <p className="text-sm text-neutral-600 truncate">{user.email}</p>
-                  </div>
-                  
-                  <div className="p-2">
-                    <Link
-                      href="/dashboard/account"
-                      className="flex items-center gap-2 p-2 hover:bg-neutral-100 rounded-lg transition-colors w-full"
-                      onClick={() => setShowUserMenu(false)}
-                    >
-                      <User size={16} />
-                      <span className="text-sm">Mi cuenta</span>
-                    </Link>
+              <AnimatePresence>
+                {showUserMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute right-0 mt-2 w-[calc(100vw-2rem)] md:w-56 bg-white border-2 border-black rounded-xl shadow-retro overflow-hidden"
+                    style={{ maxWidth: '280px' }}
+                  >
+                    <div className="p-3 border-b border-neutral-200">
+                      <p className="font-medium truncate">{profile?.full_name || authUser.user_metadata?.full_name || authUser.email}</p>
+                      <p className="text-sm text-neutral-600 truncate">{authUser.email}</p>
+                    </div>
                     
-                    <Link
-                      href="/dashboard/account"
-                      className="flex items-center gap-2 p-2 hover:bg-neutral-100 rounded-lg transition-colors w-full"
-                      onClick={() => setShowUserMenu(false)}
-                    >
-                      <CreditCard size={16} />
-                      <span className="text-sm">Facturación</span>
-                    </Link>
+                    <div className="p-2">
+                      <Link
+                        href="/dashboard/account"
+                        className="flex items-center gap-2 p-2 hover:bg-neutral-100 rounded-lg transition-colors w-full"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        <User size={16} />
+                        <span className="text-sm">Mi cuenta</span>
+                      </Link>
+                      
+                      <Link
+                        href="/dashboard/account"
+                        className="flex items-center gap-2 p-2 hover:bg-neutral-100 rounded-lg transition-colors w-full"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        <CreditCard size={16} />
+                        <span className="text-sm">Facturación</span>
+                      </Link>
+                      
+                      <Link
+                        href="/dashboard/account"
+                        className="flex items-center gap-2 p-2 hover:bg-neutral-100 rounded-lg transition-colors w-full"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        <Settings size={16} />
+                        <span className="text-sm">Configuración</span>
+                      </Link>
+                    </div>
                     
-                    <Link
-                      href="/dashboard/account"
-                      className="flex items-center gap-2 p-2 hover:bg-neutral-100 rounded-lg transition-colors w-full"
-                      onClick={() => setShowUserMenu(false)}
-                    >
-                      <Settings size={16} />
-                      <span className="text-sm">Configuración</span>
-                    </Link>
-                  </div>
-                  
-                  <div className="p-2 border-t border-neutral-200">
-                    <Link
-                      href="/login"
-                      className="flex items-center gap-2 p-2 text-red-600 hover:bg-neutral-100 rounded-lg transition-colors w-full"
-                      onClick={() => setShowUserMenu(false)}
-                    >
-                      <LogOut size={16} />
-                      <span className="text-sm">Cerrar sesión</span>
-                    </Link>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                    <div className="p-2 border-t border-neutral-200">
+                      <LogoutButton label="Salir" />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
         </div>
       </motion.div>
     </header>
