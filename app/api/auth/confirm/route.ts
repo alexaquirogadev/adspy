@@ -1,5 +1,5 @@
 // Este endpoint gestiona la confirmación de magic link (PKCE y legacy) usando @supabase/ssr para la sesión SSR.
-// Ubicación: app/auth/confirm/route.ts
+// Ubicación: app/api/auth/confirm/route.ts
 
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
