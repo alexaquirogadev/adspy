@@ -1,17 +1,9 @@
-// Este endpoint gestiona la confirmación de magic link (PKCE y legacy) usando @supabase/ssr para la sesión SSR.
+export const dynamic = 'force-dynamic';
+// Este endpoint gestiona la confirmación de magic link (PKCE y legacy) usando SSR para la sesión SSR.
 // Ubicación: app/auth/confirm/route.ts
 
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { createServerClient } from '@supabase/ssr';
-import type { Database } from '@/lib/types';
-
-// Instancia de Supabase SSR con cookies
-const supabase = createServerClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  { cookies }
-);
+import { supabaseServer } from '@/lib/supabaseServer';
 
 export async function GET(req: Request) {
   const url   = new URL(req.url);
@@ -23,6 +15,7 @@ export async function GET(req: Request) {
   let error: string | null = null;
 
   try {
+    const supabase = await supabaseServer();
     if (code) {
       const { error: e } = await supabase.auth.exchangeCodeForSession(code);
       error = e?.code ?? null;
