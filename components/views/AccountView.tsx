@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { User, CreditCard, Package, LogOut } from 'lucide-react';
+import { User, CreditCard, Package } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AnimatedBanner from '../shared/AnimatedBanner';
 import LogoutButton from '@/components/auth/LogoutButton';

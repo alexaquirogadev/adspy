@@ -7,7 +7,6 @@ import RankingView from './views/RankingView';
 import ProblemsView from './views/ProblemsView';
 import FavoritesView from './views/FavoritesView';
 import AccountView from './views/AccountView';
-import AdminView from './views/AdminView';
 import ClientLayout from './layout/ClientLayout';
 
 type ViewType = 'search' | 'ranking' | 'problems' | 'favorites' | 'account';

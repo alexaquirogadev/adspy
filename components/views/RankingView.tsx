@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, TrendingUp, Calendar, Clock, Eye, Heart, Share2, Crown, Medal, Award } from 'lucide-react';
-import AdCard from '../shared/AdCard';
 import AdPreviewModal from '../shared/AdPreviewModal';
 import AnimatedBanner from '../shared/AnimatedBanner';
 import { Ad } from '../../lib/types';

@@ -57,7 +57,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         onClick={onToggleCollapse}
         className={twMerge(
           "hidden md:flex absolute -right-4 top-8 w-8 h-8 bg-primary hover:bg-primary-hover border-2 border-black rounded-full items-center justify-center transition-all duration-300 z-50 shadow-[2px_2px_0_rgba(0,0,0,1)]",
-          isCollapsed && "rotate-180"
+          isCollapsed ? "rotate-180" : ""
         )}
         aria-label={isCollapsed ? "Expandir menú" : "Colapsar menú"}
       >
@@ -71,7 +71,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               <div
                 onClick={() => {
                   setActiveView(item.view);
-                  onClose && onClose();
+                  onClose?.();
                 }}
                 className={twMerge(
                   "flex items-center gap-3 p-3 rounded-xl transition-all duration-300 hover:bg-neutral-100 cursor-pointer",

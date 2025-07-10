@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 interface AnimatedBannerProps {
   text: string;
-  icon: React.ReactElement<any>;
+  icon: React.ReactElement;
   gradient: string;
 }
 

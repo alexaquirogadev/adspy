@@ -285,8 +285,6 @@ const SearchView: React.FC = () => {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [selectedTimeRange, setSelectedTimeRange] = useState<TimeRange>('30d');
   const [selectedSort, setSelectedSort] = useState<SortOption>('date_newest');
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
   const [selectedAd, setSelectedAd] = useState<Ad | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
@@ -381,7 +379,7 @@ const SearchView: React.FC = () => {
     }, 800);
   };
 
-  const handleImageSearch = (file: File) => {
+  const handleImageSearch = () => {
     setIsLoading(true);
     
     setTimeout(() => {
@@ -398,7 +396,7 @@ const SearchView: React.FC = () => {
     }, 1500);
   };
   
-  const handleFilterChange = (filters: any) => {
+  const handleFilterChange = (filters: Record<string, unknown>) => {
     setIsLoading(true);
     
     setTimeout(() => {
@@ -450,11 +448,6 @@ const SearchView: React.FC = () => {
     if (selectedAd && selectedAd.id === id) {
       setSelectedAd(prev => prev ? { ...prev, isFavorite: !prev.isFavorite } : null);
     }
-  };
-
-  const handleDateRangeChange = (start: Date | null, end: Date | null) => {
-    setStartDate(start);
-    setEndDate(end);
   };
 
   const handleCardClick = (ad: Ad) => {
@@ -565,7 +558,6 @@ const SearchView: React.FC = () => {
         onClose={() => setIsDatePickerOpen(false)}
         selectedTimeRange={selectedTimeRange}
         onTimeRangeChange={setSelectedTimeRange}
-        onDateRangeChange={handleDateRangeChange}
       />
       
       <div className="mt-4">

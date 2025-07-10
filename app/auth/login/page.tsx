@@ -14,7 +14,6 @@ type AuthMode = 'login' | 'register' | 'forgot';
 const AuthPage: React.FC = () => {
   const [mode, setMode] = useState<AuthMode>('login');
   const [showPassword, setShowPassword] = useState(false);
-  const [showMagic, setShowMagic] = useState(false);
   const [reason, setReason] = useState<string | null>(null);
   
   useEffect(() => {

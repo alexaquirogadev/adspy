@@ -147,7 +147,7 @@ const LandingPage: React.FC = () => {
                       ))}
                     </div>
                     <p className="mb-4 italic">
-                      "AdSpy Lite ha revolucionado nuestra estrategia publicitaria. Ahora podemos ver exactamente qué está funcionando para nuestra competencia y adaptar nuestras campañas en consecuencia."
+                      &ldquo;AdSpy Lite ha revolucionado nuestra estrategia publicitaria. Ahora podemos ver exactamente qué está funcionando para nuestra competencia y adaptar nuestras campañas en consecuencia.&rdquo;
                     </p>
                     <div>
                       <p className="font-bold">María García</p>

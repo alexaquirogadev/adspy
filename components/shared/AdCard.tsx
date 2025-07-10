@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Star, Share2, Clock, Users } from 'lucide-react';
+import { Star, Share2, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 

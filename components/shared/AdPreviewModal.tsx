@@ -25,8 +25,7 @@ import {
   Check,
   MessageCircle,
   Bookmark,
-  MousePointer,
-  BarChart3
+  MousePointer
 } from 'lucide-react';
 import { Ad } from '../../lib/types';
 

@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabaseServer';
+import { EmailOtpType, MobileOtpType } from '@supabase/supabase-js';
 
 export async function GET(req: Request) {
   const url   = new URL(req.url);
@@ -20,11 +21,17 @@ export async function GET(req: Request) {
       const { error: e } = await supabase.auth.exchangeCodeForSession(code);
       error = e?.code ?? null;
     } else if (token && type) {
-      const { error: e } = await supabase.auth.verifyOtp({ token, type: type as any, email });
+      let verifyType: EmailOtpType | MobileOtpType;
+      if (type === 'sms') {
+        verifyType = type as MobileOtpType;
+      } else {
+        verifyType = type as EmailOtpType;
+      }
+      const { error: e } = await supabase.auth.verifyOtp({ token, type: verifyType, email });
       error = e?.code ?? null;
     }
-  } catch (e: any) {
-    error = e?.code?.toString() ?? 'unknown';
+  } catch (e: unknown) {
+    error = (e as { code?: string }).code?.toString() ?? 'unknown';
   }
 
   // si hubo error ➜ login con query ?reason=expired

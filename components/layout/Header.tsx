@@ -1,10 +1,9 @@
 "use client";
 import React, { useState, useRef, useEffect } from 'react';
-import { Bell, ChevronDown, Settings, User, LogOut, CreditCard } from 'lucide-react';
+import { Bell, ChevronDown, Settings, User, CreditCard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import NotificationsMenu from './NotificationsMenu';
-import { useRouter } from 'next/navigation';
 import { useUser } from '@/components/auth/UserContextProvider';
 import LoginButton from '@/components/auth/LoginButton';
 import LogoutButton from '@/components/auth/LogoutButton';
@@ -22,13 +21,7 @@ interface HeaderProps {
   };
 }
 
-const Header: React.FC<HeaderProps> = ({ 
-  user = { 
-    name: 'Usuario',
-    email: 'usuario@ejemplo.com',
-    subscription: { plan: 'free' } 
-  } 
-}) => {
+const Header: React.FC<HeaderProps> = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -37,7 +30,6 @@ const Header: React.FC<HeaderProps> = ({
   const notificationsRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const { user: authUser, loading } = useUser();
-  const router = useRouter();
   const { data: profile } = useProfile(authUser?.id);
   const plan = profile?.plan || 'free';
 

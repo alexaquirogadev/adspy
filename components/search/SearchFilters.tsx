@@ -8,7 +8,7 @@ import DateRangePicker from './DateRangePicker';
 interface SearchFiltersProps {
   isOpen: boolean;
   onClose: () => void;
-  onFilterChange: (filters: any) => void;
+  onFilterChange: (filters: Record<string, unknown>) => void;
   selectedTimeRange: TimeRange;
   onTimeRangeChange: (range: TimeRange) => void;
 }
