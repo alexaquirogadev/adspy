@@ -3,23 +3,7 @@ import React from 'react';
 import { Star, Share2, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-
-interface Ad {
-  id: string;
-  title: string;
-  description: string;
-  brand: string;
-  thumbnail: string;
-  platform: string;
-  language: string;
-  country: string;
-  isFavorite: boolean;
-  views: number;
-  engagement: number;
-  date: string;
-  imgW: number;
-  imgH: number;
-}
+import type { Ad } from '@/lib/types';
 
 interface AdCardProps {
   ad: Ad;
@@ -47,7 +31,10 @@ const AdCard: React.FC<AdCardProps> = ({ ad, onToggleFavorite, onCardClick }) =>
   };
 
   // ratio = (alto ÷ ancho) * 100
-  const ratio = (ad.imgH / ad.imgW) * 100 || 150; // fallback 150 %
+  const ratio =
+    ad.imgW && ad.imgH
+      ? (ad.imgH / ad.imgW) * 100 // % padding-bottom
+      : 133;                      // fallback 3:4
 
   return (
     <motion.div
@@ -58,15 +45,15 @@ const AdCard: React.FC<AdCardProps> = ({ ad, onToggleFavorite, onCardClick }) =>
       onClick={handleCardClick}
     >
       <div
-        className="relative w-full overflow-hidden bg-neutral-200"
+        className="relative w-full overflow-hidden rounded-lg bg-neutral-200"
         style={{ paddingBottom: `${ratio}%` }}
       >
         <Image
           src={ad.thumbnail}
           alt={ad.title}
           fill
+          sizes="(max-width: 640px) 50vw, 16vw"
           className="object-cover"
-          sizes="(min-width: 1024px) 200px, (min-width: 768px) 25vw, 50vw"
           placeholder="blur"
           blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMzAwJyBoZWlnaHQ9JzIwMCcgZmlsbD0nI2U1ZTVlNScvPg=="
         />
