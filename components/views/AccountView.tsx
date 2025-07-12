@@ -29,7 +29,7 @@ const AccountView = () => {
     basic: 'bg-primary text-black',
     pro: 'bg-secondary text-white',
   }[safeProfile.plan as 'free' | 'basic' | 'pro'];
-
+  
   const getPlanDetails = () => {
     switch (safeProfile.plan) {
       case 'pro':

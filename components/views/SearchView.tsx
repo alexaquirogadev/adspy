@@ -11,6 +11,9 @@ import type { AdFilters } from '@/lib/types';
 import { motion } from 'framer-motion';
 import { Zap, Calendar, CalendarDays, Infinity } from 'lucide-react';
 
+const formatDate = (d: Date) =>
+  `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getDate().toString().padStart(2,'0')}`;
+
 const timeRanges = [
   { value: '7d', label: '7d', icon: <Calendar size={14} /> },
   { value: '30d', label: '30d', icon: <CalendarDays size={14} /> },
@@ -36,6 +39,12 @@ const SearchView: React.FC = () => {
     try { return JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) || '[]'); }
     catch { return []; }
   });
+
+  // Helper para propagar el cambio de rango de fechas
+  const applyTimeRange = (range: any) => {
+    setSelectedTimeRange(range);
+    setFilters(f => ({ ...f, timeRange: range }));
+  };
 
   // Mantén sortAds como está
   function sortAds(ads: any[], sortOption: string): any[] {
@@ -131,7 +140,7 @@ const SearchView: React.FC = () => {
             {mobileTimeRanges.map(tr => (
               <button
                 key={tr.value}
-                onClick={() => setSelectedTimeRange(tr.value)}
+                onClick={() => applyTimeRange(tr.value)}
                 className={`flex-1 px-3 py-2 rounded-full text-xs font-medium border-2 border-black transition-all inline-flex items-center gap-1 justify-center whitespace-nowrap ${
                   selectedTimeRange === tr.value 
                     ? "bg-primary shadow-[2px_2px_0_rgba(0,0,0,1)]" 
@@ -160,7 +169,7 @@ const SearchView: React.FC = () => {
             {timeRanges.map(tr => (
               <button
                 key={tr.value}
-                onClick={() => setSelectedTimeRange(tr.value)}
+                onClick={() => applyTimeRange(tr.value)}
                 className={`px-3 py-1.5 rounded-full text-sm font-medium border-2 border-black transition-all inline-flex items-center gap-2 ${
                   selectedTimeRange === tr.value 
                     ? "bg-primary shadow-[2px_2px_0_rgba(0,0,0,1)]" 
@@ -183,15 +192,33 @@ const SearchView: React.FC = () => {
       <SearchFilters 
         isOpen={isFiltersOpen}
         onClose={() => setIsFiltersOpen(false)}
-        onFilterChange={obj => setFilters(f => ({ ...f, ...obj }))}
+        onFilterChange={obj => {
+          // 👇 Nuevo comportamiento
+          if ('__reset' in obj) {
+            setFilters({});
+          } else {
+            setFilters(f => ({ ...f, ...obj }));
+          }
+        }}
         selectedTimeRange={selectedTimeRange}
-        onTimeRangeChange={setSelectedTimeRange}
+        onTimeRangeChange={applyTimeRange}
       />
       <DateRangePicker
         isOpen={isDatePickerOpen}
         onClose={() => setIsDatePickerOpen(false)}
         selectedTimeRange={selectedTimeRange}
-        onTimeRangeChange={setSelectedTimeRange}
+        onTimeRangeChange={applyTimeRange}
+        onDateRangeChange={(start, end) => {
+          if (!start && !end) {
+            applyTimeRange('all');
+            setFilters(f => { const { startDate, endDate, ...rest } = f; return { ...rest, timeRange: 'all' }; });
+            return;
+          }
+          if (start && end) {
+            applyTimeRange('custom');
+            setFilters(f => ({ ...f, timeRange: 'custom', startDate: formatDate(start), endDate: formatDate(end) }));
+          }
+        }}
       />
       <div className="mt-4">
         {loading ? (
@@ -209,8 +236,8 @@ const SearchView: React.FC = () => {
           </motion.div>
         ) : enrichedAds.length === 0 ? (
           <motion.div className="bg-white rounded-xl p-6 md:p-8 text-center mx-auto max-w-md">
-            <motion.div className="text-4xl md:text-6xl mb-4" animate={{ y: [0, -10, 0], scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}>
-              🔍
+            <motion.div className="text-4xl md:text-6xl mb-4" animate={{ y: [0, -10, 0] as number[], scale: [1, 1.1, 1] as number[] }} transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}>
+              {"🔍"}
             </motion.div>
             <h3 className="text-lg md:text-xl font-bold mb-2">No se encontraron resultados</h3>
             <p className="text-neutral-600 text-sm md:text-base mb-4">
@@ -226,7 +253,7 @@ const SearchView: React.FC = () => {
             </motion.button>
           </motion.div>
         ) : (
-          <motion.div className="columns-2 md:columns-4 lg:columns-6 gap-2 md:gap-3 px-1 md:px-4">
+          <motion.div className="columns-2 md:columns-4 lg:columns-6 space-y-3 px-1 md:px-4">
             {enrichedAds.map((ad, index) => (
               <AdCard 
                 key={ad.id} 

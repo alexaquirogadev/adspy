@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
-import { TimeRange } from '../../lib/types';
 
 interface DateRangePickerProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedTimeRange: TimeRange;
-  onTimeRangeChange: (range: TimeRange) => void;
+  selectedTimeRange: string; // Changed from TimeRange to string
+  onTimeRangeChange: (range: string) => void; // Changed from TimeRange to string
   onDateRangeChange?: (startDate: Date | null, endDate: Date | null) => void;
 }
 
@@ -41,14 +40,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
         setEndDate(date);
       }
     }
-    
-    if (onDateRangeChange) {
-      if (!startDate || (startDate && endDate)) {
-        onDateRangeChange(date, null);
-      } else {
-        onDateRangeChange(startDate, date < startDate ? startDate : date);
-      }
-    }
+    // Ya no llamamos a onDateRangeChange aquí
   };
 
   const isDateInRange = (date: Date): boolean => {
@@ -186,7 +178,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
                   <button
                     key={range.value}
                     onClick={() => {
-                      onTimeRangeChange(range.value as TimeRange);
+                      onTimeRangeChange(range.value); // solo esto
                       onClose();
                     }}
                     className={`px-3 py-1.5 rounded-full text-xs border-2 border-black ${
@@ -226,6 +218,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
                   onClick={() => {
                     setStartDate(null);
                     setEndDate(null);
+                    onTimeRangeChange('all');
                     if (onDateRangeChange) {
                       onDateRangeChange(null, null);
                     }
@@ -236,7 +229,13 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
                 </button>
               </div>
               <button 
-                onClick={onClose}
+                onClick={() => {
+                  if (startDate && endDate) {
+                    onDateRangeChange?.(startDate, endDate); // ahora sí
+                    onTimeRangeChange('custom');
+                  }
+                  onClose();
+                }}
                 className="w-full py-3 bg-primary border-2 border-black rounded-xl font-medium shadow-retro hover:bg-primary-hover transition-colors"
               >
                 Aplicar
@@ -257,7 +256,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
                 <button
                   key={range.value}
                   onClick={() => {
-                    onTimeRangeChange(range.value as TimeRange);
+                    onTimeRangeChange(range.value); // Changed from TimeRange to string
                     onClose();
                   }}
                   className={`px-3 py-1.5 rounded-full text-xs border-2 border-black ${
@@ -289,6 +288,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
                 onClick={() => {
                   setStartDate(null);
                   setEndDate(null);
+                  onTimeRangeChange('all');
                   if (onDateRangeChange) {
                     onDateRangeChange(null, null);
                   }
@@ -298,7 +298,13 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
                 Reiniciar
               </button>
               <button 
-                onClick={onClose}
+                onClick={() => {
+                  if (startDate && endDate) {
+                    onDateRangeChange?.(startDate, endDate); // ahora sí
+                    onTimeRangeChange('custom');
+                  }
+                  onClose();
+                }}
                 className="flex-1 py-2 bg-primary border-2 border-black rounded-xl font-medium shadow-retro hover:bg-primary-hover transition-colors text-sm"
               >
                 Aplicar

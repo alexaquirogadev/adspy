@@ -6,6 +6,39 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+export interface Ad {
+  id: string;
+  title: string;
+  description: string;
+  brand: string;
+  thumbnail: string;
+  platform: 'facebook' | 'instagram' | 'tiktok';
+  country: string;
+  language: string;
+  views: number;
+  engagement: number;
+  date: string;
+  isFavorite: boolean;
+  isEcommerce: boolean;
+  status: 'active' | 'inactive';
+  adsets: number;
+  spend: number;
+  mediaType: 'image' | 'video' | 'carousel';
+  targetAudience: string[];
+  cta: string;
+}
+
+export interface AdFilters {
+  search?: string;
+  country?: string;
+  platform?: 'facebook' | 'instagram' | 'tiktok';
+  language?: string;
+  mediaType?: 'image' | 'video' | 'carousel';
+  from?: string;   // ISO
+  to?: string;     // ISO
+  sort?: string;   // "field-dir"
+}
+
 export type Database = {
   public: {
     Tables: {

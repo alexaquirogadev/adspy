@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
-import { TimeRange } from '../../lib/types';
 
 interface DateRangeFilterProps {
-  selectedTimeRange: TimeRange;
-  onTimeRangeChange: (range: TimeRange) => void;
+  selectedTimeRange: string;
+  onTimeRangeChange: (range: string) => void;
   onDateRangeChange?: (startDate: Date | null, endDate: Date | null) => void;
 }
 
@@ -36,14 +35,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
         setEndDate(date);
       }
     }
-    
-    if (onDateRangeChange) {
-      if (!startDate || (startDate && endDate)) {
-        onDateRangeChange(date, null);
-      } else {
-        onDateRangeChange(startDate, date < startDate ? startDate : date);
-      }
-    }
+    // Ya no llamamos a onDateRangeChange aquí
   };
 
   const isDateInRange = (date: Date): boolean => {
@@ -57,7 +49,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
     return date.getTime() === startDate.getTime() || date.getTime() === endDate.getTime();
   };
 
-  const handleTimeRangeChange = (range: TimeRange) => {
+  const handleTimeRangeChange = (range: string) => {
     onTimeRangeChange(range);
   };
 
@@ -149,7 +141,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
           {quickDateRanges.map(range => (
             <button
               key={range.value}
-              onClick={() => handleTimeRangeChange(range.value as TimeRange)}
+              onClick={() => handleTimeRangeChange(range.value)}
               className={`px-3 py-1.5 rounded-full text-xs border-2 border-black ${
                 selectedTimeRange === range.value 
                   ? 'bg-primary shadow-[2px_2px_0_rgba(0,0,0,1)]' 
@@ -165,6 +157,20 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
       <div className="grid grid-cols-2 gap-4">
         {renderMonth(currentMonth)}
         {renderMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
+      </div>
+
+      <div className="flex justify-end mt-4">
+        <button
+          className="px-4 py-2 bg-primary border-2 border-black rounded-xl font-medium shadow-retro hover:bg-primary-hover transition-colors text-sm"
+          onClick={() => {
+            if (startDate && endDate) {
+              onDateRangeChange?.(startDate, endDate);
+              onTimeRangeChange('custom');
+            }
+          }}
+        >
+          Aplicar
+        </button>
       </div>
     </div>
   );

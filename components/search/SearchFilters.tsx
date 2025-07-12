@@ -2,15 +2,14 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Globe, Languages, Clock, Calendar, Store, Activity, Layers, DollarSign, Image, Users, MousePointer } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
-import { CountryCode, Language, Platform, TimeRange, AdStatus, MediaType, TargetAudience, CTA } from '../../lib/types';
 import DateRangePicker from './DateRangePicker';
 
 interface SearchFiltersProps {
   isOpen: boolean;
   onClose: () => void;
   onFilterChange: (filters: Record<string, unknown>) => void;
-  selectedTimeRange: TimeRange;
-  onTimeRangeChange: (range: TimeRange) => void;
+  selectedTimeRange: string; // Changed from TimeRange to string
+  onTimeRangeChange: (range: string) => void; // Changed from TimeRange to string
 }
 
 const SearchFilters: React.FC<SearchFiltersProps> = ({ 
@@ -20,21 +19,21 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   selectedTimeRange,
   onTimeRangeChange 
 }) => {
-  const [selectedCountries, setSelectedCountries] = useState<CountryCode[]>([]);
-  const [selectedLanguages, setSelectedLanguages] = useState<Language[]>([]);
-  const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
+  const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [isEcommerce, setIsEcommerce] = useState<boolean | null>(null);
-  const [selectedStatus, setSelectedStatus] = useState<AdStatus[]>([]);
-  const [selectedMediaTypes, setSelectedMediaTypes] = useState<MediaType[]>([]);
-  const [selectedTargetAudience, setSelectedTargetAudience] = useState<TargetAudience[]>([]);
-  const [selectedCTAs, setSelectedCTAs] = useState<CTA[]>([]);
+  const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
+  const [selectedMediaTypes, setSelectedMediaTypes] = useState<string[]>([]);
+  const [selectedTargetAudience, setSelectedTargetAudience] = useState<string[]>([]);
+  const [selectedCTAs, setSelectedCTAs] = useState<string[]>([]);
   const [adsetRange, setAdsetRange] = useState<{ min?: number; max?: number }>({});
   const [spendRange, setSpendRange] = useState<{ min?: number; max?: number }>({});
   
-  const countries: { code: CountryCode; name: string }[] = [
+  const countries: { code: string; name: string }[] = [
     { code: 'US', name: 'Estados Unidos' },
     { code: 'UK', name: 'Reino Unido' },
     { code: 'ES', name: 'España' },
@@ -42,7 +41,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     { code: 'FR', name: 'Francia' }
   ];
   
-  const languages: { code: Language; name: string }[] = [
+  const languages: { code: string; name: string }[] = [
     { code: 'en', name: 'Inglés' },
     { code: 'es', name: 'Español' },
     { code: 'fr', name: 'Francés' },
@@ -50,7 +49,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     { code: 'it', name: 'Italiano' }
   ];
   
-  const platforms: { code: Platform; name: string }[] = [
+  const platforms: { code: string; name: string }[] = [
     { code: 'facebook', name: 'Facebook' },
     { code: 'instagram', name: 'Instagram' },
     { code: 'youtube', name: 'YouTube' },
@@ -58,13 +57,13 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     { code: 'twitter', name: 'Twitter' }
   ];
 
-  const adStatus: { value: AdStatus; label: string }[] = [
+  const adStatus: { value: string; label: string }[] = [
     { value: 'active', label: 'Activo' },
     { value: 'inactive', label: 'Inactivo' },
     { value: 'archived', label: 'Archivado' }
   ];
 
-  const mediaTypes: { value: MediaType; label: string }[] = [
+  const mediaTypes: { value: string; label: string }[] = [
     { value: 'image', label: 'Imagen' },
     { value: 'video', label: 'Video' },
     { value: 'carousel', label: 'Carrusel' },
@@ -72,7 +71,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     { value: 'story', label: 'Historia' }
   ];
 
-  const targetAudiences: { value: TargetAudience; label: string }[] = [
+  const targetAudiences: { value: string; label: string }[] = [
     { value: 'interests', label: 'Intereses' },
     { value: 'behaviors', label: 'Comportamientos' },
     { value: 'demographics', label: 'Demografía' },
@@ -80,7 +79,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     { value: 'lookalikes', label: 'Lookalikes' }
   ];
 
-  const ctas: { value: CTA; label: string }[] = [
+  const ctas: { value: string; label: string }[] = [
     { value: 'shop_now', label: 'Comprar ahora' },
     { value: 'learn_more', label: 'Más información' },
     { value: 'sign_up', label: 'Registrarse' },
@@ -90,7 +89,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     { value: 'get_offer', label: 'Ver oferta' }
   ];
 
-  const toggleCountry = (code: CountryCode) => {
+  const toggleCountry = (code: string) => {
     setSelectedCountries(prev => 
       prev.includes(code) 
         ? prev.filter(c => c !== code)
@@ -98,7 +97,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     );
   };
   
-  const toggleLanguage = (code: Language) => {
+  const toggleLanguage = (code: string) => {
     setSelectedLanguages(prev => 
       prev.includes(code) 
         ? prev.filter(l => l !== code)
@@ -106,7 +105,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     );
   };
   
-  const togglePlatform = (code: Platform) => {
+  const togglePlatform = (code: string) => {
     setSelectedPlatforms(prev => 
       prev.includes(code) 
         ? prev.filter(p => p !== code)
@@ -114,7 +113,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     );
   };
 
-  const toggleStatus = (status: AdStatus) => {
+  const toggleStatus = (status: string) => {
     setSelectedStatus(prev => 
       prev.includes(status)
         ? prev.filter(s => s !== status)
@@ -122,7 +121,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     );
   };
 
-  const toggleMediaType = (type: MediaType) => {
+  const toggleMediaType = (type: string) => {
     setSelectedMediaTypes(prev =>
       prev.includes(type)
         ? prev.filter(t => t !== type)
@@ -130,7 +129,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     );
   };
 
-  const toggleTargetAudience = (audience: TargetAudience) => {
+  const toggleTargetAudience = (audience: string) => {
     setSelectedTargetAudience(prev =>
       prev.includes(audience)
         ? prev.filter(a => a !== audience)
@@ -138,7 +137,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     );
   };
 
-  const toggleCTA = (cta: CTA) => {
+  const toggleCTA = (cta: string) => {
     setSelectedCTAs(prev =>
       prev.includes(cta)
         ? prev.filter(c => c !== cta)
@@ -146,12 +145,12 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     );
   };
 
+  const formatDate = (d: Date) =>
+    `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getDate().toString().padStart(2,'0')}`;
+
   const handleDateRangeChange = (start: Date | null, end: Date | null) => {
     setStartDate(start);
     setEndDate(end);
-    if (start && end) {
-      onTimeRangeChange('custom');
-    }
   };
 
   const applyFilters = () => {
@@ -161,15 +160,15 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       platforms: selectedPlatforms,
       timeRange: selectedTimeRange,
       ...(startDate && endDate ? {
-        customDateRange: {
-          start: startDate.toISOString(),
-          end: endDate.toISOString()
-        }
+        startDate: formatDate(startDate),
+        endDate: formatDate(endDate),
       } : {}),
-      isEcommerce: isEcommerce,
+      isEcommerce,
       status: selectedStatus,
-      adsetRange,
-      spendRange,
+      adsetMin: adsetRange.min,
+      adsetMax: adsetRange.max,
+      spendMin: spendRange.min,
+      spendMax: spendRange.max,
       mediaTypes: selectedMediaTypes,
       targetAudience: selectedTargetAudience,
       cta: selectedCTAs
@@ -192,6 +191,8 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     setSpendRange({});
     onTimeRangeChange('30d');
     onFilterChange({});
+    // Avísale al padre que es un “reset” completo
+    onFilterChange({ __reset: true });
     onClose();
   };
 
