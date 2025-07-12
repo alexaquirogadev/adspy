@@ -39,6 +39,8 @@ export interface Ad {
   imgH?: number;   // ← opcional
 }
 
+export type TimeRange = '7d' | '30d' | 'all' | 'custom';
+
 export interface AdFilters {
   search?: string;
   country?: string;
@@ -48,6 +50,11 @@ export interface AdFilters {
   from?: string;   // ISO
   to?: string;     // ISO
   sort?: string;   // "field-dir"
+  /** Rango rápido: '7d' | '30d' | 'all' | 'custom' */
+  timeRange?: TimeRange;
+  /** Cuando timeRange === 'custom' */
+  startDate?: string;   // ISO yyyy-mm-dd
+  endDate?: string;     // ISO yyyy-mm-dd
 }
 
 export type Database = {

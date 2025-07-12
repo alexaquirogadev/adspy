@@ -211,7 +211,7 @@ const SearchView: React.FC = () => {
         onDateRangeChange={(start, end) => {
           if (!start && !end) {
             applyTimeRange('all');
-            setFilters(f => { const { startDate, endDate, ...rest } = f; return { ...rest, timeRange: 'all' }; });
+            setFilters(prev => ({ ...prev, timeRange: 'all', startDate: undefined, endDate: undefined }));
             return;
           }
           if (start && end) {
@@ -236,7 +236,7 @@ const SearchView: React.FC = () => {
           </motion.div>
         ) : enrichedAds.length === 0 ? (
           <motion.div className="bg-white rounded-xl p-6 md:p-8 text-center mx-auto max-w-md">
-            <motion.div className="text-4xl md:text-6xl mb-4" animate={{ y: [0, -10, 0] as number[], scale: [1, 1.1, 1] as number[] }} transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}>
+            <motion.div className="text-4xl md:text-6xl mb-4" animate={{ y: [0, -10, 0], scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}>
               {"🔍"}
             </motion.div>
             <h3 className="text-lg md:text-xl font-bold mb-2">No se encontraron resultados</h3>
