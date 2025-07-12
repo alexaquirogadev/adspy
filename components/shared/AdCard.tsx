@@ -5,13 +5,20 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import type { Ad } from '@/lib/types';
 
-interface AdCardProps {
+export interface AdCardProps {
   ad: Ad;
-  onToggleFavorite?: (id: string) => void;
-  onCardClick?: (ad: Ad) => void;
+  onToggleFavorite: (id: string) => void;
+  onCardClick: (ad: Ad) => void;
+  /** posición en la lista para stagger animation (opcional) */
+  index?: number;
 }
 
-const AdCard: React.FC<AdCardProps> = ({ ad, onToggleFavorite, onCardClick }) => {
+const AdCard: React.FC<AdCardProps> = ({
+  ad,
+  onToggleFavorite,
+  onCardClick,
+  index = 0,
+}) => {
   const formatNumber = (num: number): string => {
     if (num >= 1000000) {
       return (num / 1000000).toFixed(1) + 'M';
