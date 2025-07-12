@@ -22,7 +22,7 @@ const AuthPage: React.FC = () => {
       setReason(r);
     }
   }, []);
-
+  
   const renderForm = () => {
     switch (mode) {
       case 'login':

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import type { Ad, AdFilters } from "@/lib/types";
+import { subDays } from "date-fns";
 
 const dataPath = process.cwd() + "/public/mock/ads.json";
 
@@ -41,11 +42,31 @@ export async function GET(req: Request) {
     // Lee y parsea el JSON
     const raw = await fs.readFile(dataPath, "utf-8");
     const ads: Ad[] = JSON.parse(raw);
+    let filteredAds = ads;
     const { searchParams } = new URL(req.url);
+
+    // --- filtro por fechas ---
+    const { timeRange, startDate, endDate } = Object.fromEntries(searchParams.entries());
+
+    if (timeRange === '7d' || timeRange === '30d') {
+      const days = timeRange === '7d' ? 7 : 30;
+      const from = subDays(new Date(), days);
+      filteredAds = filteredAds.filter(a => new Date(a.date) >= from);
+    }
+    if (timeRange === 'custom' && startDate && endDate) {
+      const s = new Date(startDate as string);
+      const e = new Date(endDate as string);
+      filteredAds = filteredAds.filter(a => {
+        const d = new Date(a.date);
+        return d >= s && d <= e;
+      });
+    }
+
+    // Normaliza y parsea los query params a AdFilters
     const filters = parseFilters(searchParams);
 
     // Filtrado inmutable
-    let filtered = ads.filter((ad) => {
+    filteredAds = filteredAds.filter((ad) => {
       // search: busca en title y description (case-insensitive)
       if (filters.search) {
         const q = filters.search.toLowerCase();
@@ -63,9 +84,24 @@ export async function GET(req: Request) {
     });
 
     // Ordena si corresponde
-    filtered = sortAds(filtered, filters.sort);
+    filteredAds = sortAds(filteredAds, filters.sort);
 
-    return NextResponse.json(filtered, {
+    // --- filtros con arrays ---
+    const arr = (k: string) => searchParams.getAll(k);
+
+    if (arr('platforms').length)
+      filteredAds = filteredAds.filter(a => arr('platforms').includes(a.platform));
+
+    if (arr('countries').length)
+      filteredAds = filteredAds.filter(a => arr('countries').includes(a.country));
+
+    if (arr('languages').length)
+      filteredAds = filteredAds.filter(a => arr('languages').includes(a.language));
+
+    if (arr('mediaTypes').length)
+      filteredAds = filteredAds.filter(a => arr('mediaTypes').includes(a.mediaType));
+
+    return NextResponse.json(filteredAds, {
       status: 200,
       headers: { "cache-control": "no-store" },
     });
