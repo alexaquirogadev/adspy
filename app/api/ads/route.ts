@@ -3,6 +3,17 @@ import { promises as fs } from "fs";
 import type { Ad, AdFilters } from "@/lib/types";
 import { subDays } from "date-fns";
 
+type AdsQuery = {
+  platform?: string;
+  search?: string;
+  timeRange?: 'all' | '7d' | '30d' | 'custom';
+  startDate?: string;
+  endDate?: string;
+  countries?: string | string[];
+  languages?: string | string[];
+  [key: string]: string | string[] | undefined;
+};
+
 const dataPath = process.cwd() + "/public/mock/ads.json";
 
 // Normaliza y parsea los query params a AdFilters

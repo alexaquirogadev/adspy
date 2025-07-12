@@ -25,10 +25,9 @@ interface AdCardProps {
   ad: Ad;
   onToggleFavorite?: (id: string) => void;
   onCardClick?: (ad: Ad) => void;
-  index: number;
 }
 
-const AdCard: React.FC<AdCardProps> = ({ ad, onToggleFavorite, onCardClick, index }) => {
+const AdCard: React.FC<AdCardProps> = ({ ad, onToggleFavorite, onCardClick }) => {
   const formatNumber = (num: number): string => {
     if (num >= 1000000) {
       return (num / 1000000).toFixed(1) + 'M';

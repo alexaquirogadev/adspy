@@ -254,13 +254,12 @@ const SearchView: React.FC = () => {
           </motion.div>
         ) : (
           <motion.div className="columns-2 md:columns-4 lg:columns-6 space-y-3 px-1 md:px-4">
-            {enrichedAds.map((ad, index) => (
+            {enrichedAds.map((ad) => (
               <AdCard 
                 key={ad.id} 
                 ad={ad} 
                 onToggleFavorite={toggleFavorite}
                 onCardClick={handleCardClick}
-                index={index}
               />
             ))}
           </motion.div>
