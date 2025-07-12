@@ -2,8 +2,7 @@ import React from 'react';
 import { Search, Star, User, BarChart, ChevronLeft, Trophy, Target } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 import LogoutButton from '@/components/auth/LogoutButton';
-
-type ViewType = 'search' | 'ranking' | 'problems' | 'favorites' | 'account' | 'admin';
+import type { ViewType } from '@/lib/types';
 
 interface SidebarProps {
   isAdmin?: boolean;

@@ -8,8 +8,7 @@ import ProblemsView from './views/ProblemsView';
 import FavoritesView from './views/FavoritesView';
 import AccountView from './views/AccountView';
 import ClientLayout from './layout/ClientLayout';
-
-type ViewType = 'search' | 'ranking' | 'problems' | 'favorites' | 'account';
+import type { ViewType } from '@/lib/types';
 
 const Dashboard: React.FC = () => {
   const [activeView, setActiveView] = useState<ViewType>('search');
@@ -24,7 +23,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <ClientLayout activeView={activeView} setActiveView={setActiveView}>
-      {viewComponents[activeView] || <SearchView />}
+      {activeView in viewComponents ? viewComponents[activeView as keyof typeof viewComponents] : <SearchView />}
     </ClientLayout>
   );
 };

@@ -3,8 +3,7 @@ import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import { UserContextProvider } from '@/components/auth/UserContextProvider';
-
-type ViewType = 'search' | 'ranking' | 'problems' | 'favorites' | 'account';
+import type { ViewType } from '@/lib/types';
 
 /**
  * ClientLayout es un componente de layout que envuelve el contenido de la aplicación.

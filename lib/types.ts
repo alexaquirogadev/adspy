@@ -195,3 +195,12 @@ export const Constants = {
     Enums: {},
   },
 } as const
+
+// 👉 Asegúrate de que SOLO existe este ViewType
+export type ViewType =
+  | 'search'
+  | 'ranking'
+  | 'favorites'
+  | 'problems'
+  | 'account'
+  | 'admin';
