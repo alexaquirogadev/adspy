@@ -4,7 +4,12 @@ export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabaseServer';
-import { EmailOtpType, MobileOtpType } from '@supabase/supabase-js';
+import type {
+  VerifyEmailOtpParams,
+  VerifyMobileOtpParams,
+  EmailOtpType,
+  MobileOtpType,
+} from '@supabase/supabase-js';
 
 export async function GET(req: Request) {
   const url   = new URL(req.url);
@@ -12,6 +17,7 @@ export async function GET(req: Request) {
   const token = url.searchParams.get('token');  // magic-link legacy / recovery
   const type  = url.searchParams.get('type');   // optional: 'magiclink', 'recovery', …
   const email = url.searchParams.get('email') ?? '';
+  const phone = url.searchParams.get('phone') ?? '';
 
   let error: string | null = null;
 
@@ -21,13 +27,23 @@ export async function GET(req: Request) {
       const { error: e } = await supabase.auth.exchangeCodeForSession(code);
       error = e?.code ?? null;
     } else if (token && type) {
-      let verifyType: EmailOtpType | MobileOtpType;
-      if (type === 'sms') {
-        verifyType = type as MobileOtpType;
+      if (type === 'sms' || type === 'phone_change') {
+        // ----- OTP por SMS / phone -----
+        const mobileParams: VerifyMobileOtpParams = {
+          token,
+          type: type as MobileOtpType,
+          phone,
+        };
+        var { error: e } = await supabase.auth.verifyOtp(mobileParams);
       } else {
-        verifyType = type as EmailOtpType;
+        // ----- OTP por e-mail ----------
+        const emailParams: VerifyEmailOtpParams = {
+          token,
+          type: type as EmailOtpType,
+          email,
+        };
+        var { error: e } = await supabase.auth.verifyOtp(emailParams);
       }
-      const { error: e } = await supabase.auth.verifyOtp({ token, type: verifyType, email });
       error = e?.code ?? null;
     }
   } catch (e: unknown) {
