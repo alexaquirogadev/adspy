@@ -6,13 +6,22 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+// ⬇️ Amplía el union type una sola vez
+export type AdPlatform =
+  | 'facebook'
+  | 'instagram'
+  | 'tiktok'
+  | 'youtube'
+  | 'twitter'
+  | 'pinterest';   // añade o quita según necesites
+
 export interface Ad {
   id: string;
   title: string;
   description: string;
   brand: string;
   thumbnail: string;
-  platform: 'facebook' | 'instagram' | 'tiktok';
+  platform: AdPlatform;
   country: string;
   language: string;
   views: number;
