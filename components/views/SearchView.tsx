@@ -9,7 +9,7 @@ import AnimatedBanner from '../shared/AnimatedBanner';
 import { useAds } from '@/lib/useAds';
 import type { AdFilters } from '@/lib/types';
 import { motion } from 'framer-motion';
-import { Zap, Calendar, CalendarDays, Infinity } from 'lucide-react';
+import { Zap, Calendar, CalendarDays, Infinity as InfinityIcon } from 'lucide-react';
 
 const formatDate = (d: Date) =>
   `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getDate().toString().padStart(2,'0')}`;
@@ -17,11 +17,11 @@ const formatDate = (d: Date) =>
 const timeRanges = [
   { value: '7d', label: '7d', icon: <Calendar size={14} /> },
   { value: '30d', label: '30d', icon: <CalendarDays size={14} /> },
-  { value: 'all', label: 'Todo', icon: <Infinity size={14} /> }
+  { value: 'all', label: 'Todo', icon: <InfinityIcon size={14} /> }
 ];
 
 const mobileTimeRanges = [
-  { value: 'all', label: 'Todo', icon: <Infinity size={14} /> }
+  { value: 'all', label: 'Todo', icon: <InfinityIcon size={14} /> }
 ];
 
 const FAVORITES_STORAGE_KEY = 'adspy_favorites';
