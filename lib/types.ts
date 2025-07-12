@@ -35,6 +35,8 @@ export interface Ad {
   mediaType: 'image' | 'video' | 'carousel';
   targetAudience: string[];
   cta: string;
+  imgW?: number;   // ← opcional
+  imgH?: number;   // ← opcional
 }
 
 export interface AdFilters {
