@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   // 🚀 habilitamos images.remotePatterns (reemplaza images.domains obsoleto)
   images: {
     remotePatterns: [
+      // Existentes
       {
         protocol: 'https',
         hostname: 'placehold.co',
@@ -14,6 +15,13 @@ const nextConfig: NextConfig = {
         hostname: 'images.pexels.com',
         pathname: '/**',
       },
+      // TikTok CDN
+      { protocol: 'https', hostname: 'p77-sg.tiktokcdn.com' },
+      { protocol: 'https', hostname: 'p16-sg.tiktokcdn.com' },
+      { protocol: 'https', hostname: 'p77-sign-va.tiktokcdn.com' },
+      { protocol: 'https', hostname: 'p16-sign-va.tiktokcdn.com' },
+      { protocol: 'https', hostname: 'p77-sign-sg.tiktokcdn.com' },
+      { protocol: 'https', hostname: 'p16-sign-sg.tiktokcdn.com' },
     ],
   },
   eslint: {

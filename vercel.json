@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/sounds/refresh?countries=United%20States,United%20Kingdom,Spain,Mexico,Brazil,Argentina,Colombia,Chile,Peru,Canada,Germany,France,Italy,Portugal,Netherlands,Belgium,Sweden,Norway,Denmark,Finland,Ireland,Switzerland,Austria,Australia,New%20Zealand,Poland,Turkey,Japan,South%20Korea,India&limit=50&period=7&backfillPreview=1&backfillCount=30&cronKey=8716dad416964dfdc13a197b64fc2361",
+      "schedule": "0 */12 * * *"
+    }
+  ]
+}

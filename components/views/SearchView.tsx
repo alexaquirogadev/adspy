@@ -1,13 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import SearchBar from '../search/SearchBar';
 import SearchFilters from '../search/SearchFilters';
 import DateRangePicker from '../search/DateRangePicker';
 import SortButton, { SortOption } from '../search/SortButton';
-import AdCard from '../shared/AdCard';
-import AdPreviewModal from '../shared/AdPreviewModal';
+import SoundCard from '../shared/SoundCard';
+import SoundPreviewModal from '../shared/SoundPreviewModal';
 import AnimatedBanner from '../shared/AnimatedBanner';
-import { useAds } from '@/lib/useAds';
-import type { AdFilters } from '@/lib/types';
+import { useSounds } from '@/lib/useSounds';
+import type { Sound } from '@/lib/types';
 import { motion } from 'framer-motion';
 import { Zap, Calendar, CalendarDays, Infinity as InfinityIcon } from 'lucide-react';
 
@@ -27,14 +27,13 @@ const mobileTimeRanges = [
 const FAVORITES_STORAGE_KEY = 'adspy_favorites';
 
 const SearchView: React.FC = () => {
-  const [filters, setFilters] = useState<AdFilters>({});
-  const { ads, loading } = useAds(filters);
+  const [filters, setFilters] = useState<{ region: string } & Record<string, any>>({ region: 'ES' });
+  const { sounds, isLoading } = useSounds(filters.region || 'ES');
   const [selectedSort, setSelectedSort] = useState<SortOption>('date_newest');
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [selectedTimeRange, setSelectedTimeRange] = useState('30d');
-  const [selectedAd, setSelectedAd] = useState<any>(null);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [selected, setSelected] = useState<Sound | null>(null);
   const [favorites, setFavorites] = useState<string[]>(() => {
     try { return JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) || '[]'); }
     catch { return []; }
@@ -46,54 +45,16 @@ const SearchView: React.FC = () => {
     setFilters(f => ({ ...f, timeRange: range }));
   };
 
-  // Mantén sortAds como está
-  function sortAds(ads: any[], sortOption: string): any[] {
-    const sorted = [...ads];
-    
-    switch (sortOption) {
-      case 'date_newest':
-        return sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-      case 'date_oldest':
-        return sorted.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-      case 'duration_longest':
-        // Mock duration calculation based on date difference from today
-        return sorted.sort((a, b) => {
-          const aDuration = Date.now() - new Date(a.date).getTime();
-          const bDuration = Date.now() - new Date(b.date).getTime();
-          return bDuration - aDuration;
-        });
-      case 'duration_shortest':
-        return sorted.sort((a, b) => {
-          const aDuration = Date.now() - new Date(a.date).getTime();
-          const bDuration = Date.now() - new Date(b.date).getTime();
-          return aDuration - bDuration;
-        });
-      case 'adsets_most':
-        return sorted.sort((a, b) => b.adsets - a.adsets);
-      case 'adsets_least':
-        return sorted.sort((a, b) => a.adsets - b.adsets);
-      case 'spend_highest':
-        return sorted.sort((a, b) => b.spend - a.spend);
-      case 'spend_lowest':
-        return sorted.sort((a, b) => a.spend - b.spend);
-      case 'likes_most':
-        return sorted.sort((a, b) => (b.views * 0.05) - (a.views * 0.05));
-      case 'likes_least':
-        return sorted.sort((a, b) => (a.views * 0.05) - (b.views * 0.05));
-      case 'views_most':
-        return sorted.sort((a, b) => b.views - a.views);
-      case 'views_least':
-        return sorted.sort((a, b) => a.views - b.views);
-      default:
-        return sorted;
+  // Ordena los sonidos por fecha si existe
+  const sortedSounds = [...sounds].sort((a, b) => {
+    if (a.fetched_at && b.fetched_at) {
+      return new Date(b.fetched_at).getTime() - new Date(a.fetched_at).getTime();
     }
-  }
+    return 0;
+  });
 
-  const sortedAds = useMemo(() => sortAds(ads, selectedSort), [ads, selectedSort]);
-  const enrichedAds = useMemo(
-    () => sortedAds.map(ad => ({ ...ad, isFavorite: favorites.includes(ad.id) })),
-    [sortedAds, favorites]
-  );
+  // Añade favoritos
+  const enrichedSounds = sortedSounds.map(sound => ({ ...sound, isFavorite: favorites.includes(sound.id) }));
 
   const toggleFavorite = (id: string) => {
     setFavorites(prev => {
@@ -105,21 +66,10 @@ const SearchView: React.FC = () => {
     });
   };
 
-  const handleCardClick = (ad: any) => {
-    setSelectedAd(ad);
-    setIsPreviewOpen(true);
-  };
-
-  const handleViewDetails = (id: string) => {
-    // Here you would navigate to a detailed view page
-    console.log('View details for ad:', id);
-    setIsPreviewOpen(false);
-  };
-  
   return (
     <div className="pt-1 md:mt-0">
       <AnimatedBanner 
-        text="Encuentra los anuncios más virales"
+        text="Encuentra los sonidos más virales"
         icon={<Zap />}
         gradient="from-primary to-white"
       />
@@ -193,9 +143,8 @@ const SearchView: React.FC = () => {
         isOpen={isFiltersOpen}
         onClose={() => setIsFiltersOpen(false)}
         onFilterChange={obj => {
-          // 👇 Nuevo comportamiento
           if ('__reset' in obj) {
-            setFilters({});
+            setFilters({ region: 'ES' });
           } else {
             setFilters(f => ({ ...f, ...obj }));
           }
@@ -221,7 +170,7 @@ const SearchView: React.FC = () => {
         }}
       />
       <div className="mt-4">
-        {loading ? (
+        {isLoading ? (
           <motion.div className="columns-2 md:columns-4 lg:columns-6 gap-2 md:gap-3 px-1 md:px-4">
             {[...Array(12)].map((_, index) => (
               <div key={index} className="break-inside-avoid mb-2 md:mb-3 rounded-lg md:rounded-xl overflow-hidden">
@@ -234,44 +183,38 @@ const SearchView: React.FC = () => {
               </div>
             ))}
           </motion.div>
-        ) : enrichedAds.length === 0 ? (
+        ) : enrichedSounds.length === 0 ? (
           <motion.div className="bg-white rounded-xl p-6 md:p-8 text-center mx-auto max-w-md">
             <motion.div className="text-4xl md:text-6xl mb-4" animate={{ y: [0, -10, 0], scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}>
               {"🔍"}
             </motion.div>
-            <h3 className="text-lg md:text-xl font-bold mb-2">No se encontraron resultados</h3>
+            <h3 className="text-lg md:text-xl font-bold mb-2">No se encontraron sonidos</h3>
             <p className="text-neutral-600 text-sm md:text-base mb-4">
-              Intenta con diferentes palabras clave o ajusta los filtros para ver más anuncios.
+              Intenta con diferentes palabras clave o ajusta los filtros para ver más sonidos.
             </p>
             <motion.button 
-              onClick={() => setFilters({})}
+              onClick={() => setFilters({ region: 'ES' })}
               className="dopamine-btn inline-flex items-center gap-2"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Ver todos los anuncios
+              Ver todos los sonidos
             </motion.button>
           </motion.div>
         ) : (
           <motion.div className="columns-2 md:columns-4 lg:columns-6 space-y-3 px-1 md:px-4">
-            {enrichedAds.map((ad) => (
-              <AdCard 
-                key={ad.id} 
-                ad={ad} 
+            {enrichedSounds.map(sound => (
+              <SoundCard 
+                key={sound.id} 
+                sound={sound}
                 onToggleFavorite={toggleFavorite}
-                onCardClick={handleCardClick}
+                onCardClick={() => setSelected(sound)}
               />
             ))}
           </motion.div>
         )}
       </div>
-      <AdPreviewModal
-        ad={selectedAd}
-        isOpen={isPreviewOpen}
-        onClose={() => setIsPreviewOpen(false)}
-        onToggleFavorite={toggleFavorite}
-        onViewDetails={handleViewDetails}
-      />
+      {selected && <SoundPreviewModal sound={selected} onClose={() => setSelected(null)} />}
     </div>
   );
 };

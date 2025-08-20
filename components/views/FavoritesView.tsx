@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import AdCard from '../shared/AdCard';
-import AdPreviewModal from '../shared/AdPreviewModal';
+import SoundCard from '../shared/SoundCard';
+import SoundPreviewModal from '../shared/SoundPreviewModal';
 import AnimatedBanner from '../shared/AnimatedBanner';
 import SortButton, { SortOption } from '../search/SortButton';
 import { Ad } from '../../lib/types';
@@ -350,7 +350,7 @@ const FavoritesView: React.FC = () => {
             transition={{ staggerChildren: 0.05 }}
           >
             {favorites.map((ad, index) => (
-              <AdCard 
+              <SoundCard 
                 key={ad.id} 
                 ad={ad} 
                 onToggleFavorite={toggleFavorite}
@@ -363,13 +363,7 @@ const FavoritesView: React.FC = () => {
       </div>
 
       {/* Ad Preview Modal */}
-      <AdPreviewModal
-        ad={selectedAd}
-        isOpen={isPreviewOpen}
-        onClose={() => setIsPreviewOpen(false)}
-        onToggleFavorite={toggleFavorite}
-        onViewDetails={handleViewDetails}
-      />
+      <SoundPreviewModal sound={selectedAd} onClose={() => setIsPreviewOpen(false)} />
     </div>
   );
 };

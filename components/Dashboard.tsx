@@ -11,19 +11,19 @@ import ClientLayout from './layout/ClientLayout';
 import type { ViewType } from '@/lib/types';
 
 const Dashboard: React.FC = () => {
-  const [activeView, setActiveView] = useState<ViewType>('search');
+  const [activeView, setActiveView] = useState<ViewType>('ranking');
 
   const viewComponents = {
-    search: <SearchView />,
+   // search: <SearchView />,
     ranking: <RankingView />,
-    problems: <ProblemsView />,
-    favorites: <FavoritesView />,
+    //problems: <ProblemsView />,
+    //favorites: <FavoritesView />,
     account: <AccountView />
   };
 
   return (
     <ClientLayout activeView={activeView} setActiveView={setActiveView}>
-      {activeView in viewComponents ? viewComponents[activeView as keyof typeof viewComponents] : <SearchView />}
+      {activeView in viewComponents ? viewComponents[activeView as keyof typeof viewComponents] : <RankingView />}
     </ClientLayout>
   );
 };

@@ -222,3 +222,37 @@ export type ViewType =
   | 'problems'
   | 'account'
   | 'admin';
+
+// usado en frontend y en /api/sounds
+/**
+ * Representa un sonido viral o trending traído desde Apify y guardado en Supabase.
+ */
+export type Sound = {
+  id?: string;
+  sound_id: string;
+  title: string;
+  author: string;
+  cover_url?: string | null;
+  preview_url?: string | null;   // mismo valor que play_url para la UI
+  play_url?: string | null;
+  video_count?: number | null;
+  user_count?: number | null;
+  duration?: number | null;
+  language?: string | null;
+  create_time?: string | null;   // ISO
+  region: string;
+  rank?: number | null;
+  fetched_at?: string;           // ISO
+  sort_type?: string | null;
+  tiktok_url?: string | null;    // opcional (NULL por ahora)
+};
+
+export type SoundSnapshot = {
+  sound_id: string;
+  region: string;
+  fetched_at: string;            // ISO
+  video_count?: number | null;
+  rank?: number | null;
+};
+
+export type SoundArray = Sound[];

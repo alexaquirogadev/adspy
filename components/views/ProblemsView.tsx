@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Target, Zap, Heart, Brain, Moon, Dumbbell, Smile, Shield, Sparkles } from 'lucide-react';
-import AdCard from '../shared/AdCard';
-import AdPreviewModal from '../shared/AdPreviewModal';
+import SoundCard from '../shared/SoundCard';
+import SoundPreviewModal from '../shared/SoundPreviewModal';
 import AnimatedBanner from '../shared/AnimatedBanner';
 import SortButton, { SortOption } from '../search/SortButton';
 import { Ad } from '../../lib/types';
@@ -432,7 +432,7 @@ const ProblemsView: React.FC = () => {
                 transition={{ staggerChildren: 0.05 }}
               >
                 {ads.map((ad, index) => (
-                  <AdCard 
+                  <SoundCard 
                     key={ad.id} 
                     ad={ad} 
                     onToggleFavorite={toggleFavorite}
@@ -447,13 +447,7 @@ const ProblemsView: React.FC = () => {
       )}
 
       {/* Ad Preview Modal */}
-      <AdPreviewModal
-        ad={selectedAd}
-        isOpen={isPreviewOpen}
-        onClose={() => setIsPreviewOpen(false)}
-        onToggleFavorite={toggleFavorite}
-        onViewDetails={handleViewDetails}
-      />
+      <SoundPreviewModal sound={selectedAd} onClose={() => setIsPreviewOpen(false)} />
     </div>
   );
 };

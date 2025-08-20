@@ -22,10 +22,10 @@ const Sidebar: React.FC<SidebarProps> = ({
   setActiveView
 }) => {
   const navItems: { view: ViewType; icon: React.ReactNode; label: string }[] = [
-    { view: 'search', icon: <Search size={24} />, label: 'Buscar' },
+    //{ view: 'search', icon: <Search size={24} />, label: 'Buscar' },
     { view: 'ranking', icon: <Trophy size={24} />, label: 'Top Ranking' },
-    { view: 'problems', icon: <Target size={24} />, label: 'Por Problema' },
-    { view: 'favorites', icon: <Star size={24} />, label: 'Favoritos' },
+    //{ view: 'problems', icon: <Target size={24} />, label: 'Por Problema' },
+    //{ view: 'favorites', icon: <Star size={24} />, label: 'Favoritos' },
     { view: 'account', icon: <User size={24} />, label: 'Mi cuenta' },
   ];  
   if (isAdmin) {

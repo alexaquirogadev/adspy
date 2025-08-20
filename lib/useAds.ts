@@ -48,6 +48,7 @@ export function useAds(filters: AdFilters, debounceMs = 300): { ads: Ad[]; loadi
     // Debounce fetch
     timeoutRef.current = setTimeout(() => {
       const qs = filtersToQuery(filters);
+      // Si en el futuro se usa para sonidos, cambiar a /api/sounds
       const url = qs ? `/api/ads?${qs}` : '/api/ads';
       fetch(url, { signal: controller.signal })
         .then(async (res) => {
