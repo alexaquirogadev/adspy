@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabaseServer';
 
+export const runtime = 'nodejs';
+
 /** Devuelve una URL de avatar SVG única */
 function randomAvatar() {
   const seed = Math.random().toString(36).slice(2, 10);
@@ -17,21 +19,24 @@ export async function POST(req: Request) {
 
   if (!user) return NextResponse.json({ error: 'unauthenticated' }, { status: 401 });
 
-  // Lee avatar actual; si está vacío genera uno nuevo
-  const current = await supabase
+  // Lee avatar actual; si está vacío genera uno nuevo (forzamos tipo del select)
+  const { data: current, error: currentErr } = await supabase
     .from('profiles')
     .select('avatar_url')
     .eq('id', user.id)
-    .single();
+    .maybeSingle();
+  if (currentErr) {
+    // no cortamos el flujo; caemos a generar un avatar
+    console.warn('[profile/update] select avatar_url error:', currentErr.message);
+  }
+  const avatar_url = (current as any)?.avatar_url ?? randomAvatar();
 
-  const avatar_url = current.data?.avatar_url || randomAvatar();
-
-  const { error: errProfile } = await supabase
-    .from('profiles')
+  const { error: errProfile } = await (supabase
+    .from('profiles') as any)
     .update({ full_name, avatar_url })
     .eq('id', user.id);
 
-  let errEmail = null;
+  let errEmail = null as any;
   if (email && email !== user.email) {
     const { error } = await supabase.auth.updateUser({ email });
     errEmail = error;
