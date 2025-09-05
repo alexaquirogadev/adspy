@@ -39,7 +39,8 @@ async function upsertRegionBatch(items: any[]) {
   if (mErr) throw new Error(mErr.message);
 }
 
-export async function handler(req: NextRequest) {
+// Renombrada: función privada sin export
+async function refreshHandler(req: NextRequest) {
   try {
     if (req.method !== 'POST' && req.method !== 'GET') {
       return NextResponse.json({ error: 'Method Not Allowed' }, { status: 405 });
@@ -138,4 +139,5 @@ export async function handler(req: NextRequest) {
   }
 }
 
-export { handler as POST, handler as GET }; 
+// Exporta GET/POST usando la función privada
+export { refreshHandler as GET, refreshHandler as POST }; 
