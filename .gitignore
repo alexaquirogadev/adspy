@@ -39,3 +39,29 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# --- Environment files (NEVER COMMIT) ---
+.env
+.env.*
+!.env.example
+*.local
+*.env.local
+*.development.local
+*.production.local
+*.test.local
+
+# --- Keys & certs ---
+*.key
+*.pem
+*.crt
+
+# --- Next.js & Node artifacts ---
+.next
+node_modules
+out
+dist
+coverage
+
+# --- OS/Editor junk ---
+.DS_Store
+.idea
