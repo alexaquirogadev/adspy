@@ -13,35 +13,34 @@ function randomAvatar() {
 // Ubicación: /app/api/profile/update/route.ts
 // Responde con { success: true } o { error }
 export async function POST(req: Request) {
-  const { full_name, email } = await req.json();        // avatar lo generamos aquí si falta
+  const { full_name, email, avatar_url: avatarFromBody } = await req.json();
   const supabase = await supabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) return NextResponse.json({ error: 'unauthenticated' }, { status: 401 });
 
-  // Lee avatar actual; si está vacío genera uno nuevo (forzamos tipo del select)
-  const { data: current, error: currentErr } = await supabase
-    .from('profiles')
+  // Lee avatar actual para fallback
+  const { data: current } = await (supabase
+    .from('profiles') as any)
     .select('avatar_url')
     .eq('id', user.id)
-    .maybeSingle();
-  if (currentErr) {
-    // no cortamos el flujo; caemos a generar un avatar
-    console.warn('[profile/update] select avatar_url error:', currentErr.message);
-  }
-  const avatar_url = (current as any)?.avatar_url ?? randomAvatar();
+    .single();
+
+  const avatar_url = avatarFromBody ?? (current?.avatar_url ?? randomAvatar());
 
   const { error: errProfile } = await (supabase
     .from('profiles') as any)
     .update({ full_name, avatar_url })
     .eq('id', user.id);
 
-  let errEmail = null as any;
+  let errEmail = null;
   if (email && email !== user.email) {
     const { error } = await supabase.auth.updateUser({ email });
     errEmail = error;
   }
 
-  if (errProfile || errEmail) return NextResponse.json({ error: errProfile || errEmail }, { status: 400 });
+  if (errProfile || errEmail) {
+    return NextResponse.json({ error: errProfile || errEmail }, { status: 400 });
+  }
   return NextResponse.json({ success: true, avatar_url });
 } 

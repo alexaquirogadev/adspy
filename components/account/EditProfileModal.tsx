@@ -4,6 +4,9 @@ import { Dialog } from '@headlessui/react';
 import { useProfile } from '@/lib/useProfile';
 import { useUser } from '@/components/auth/UserContextProvider';
 import Avatar from 'boring-avatars';
+import type { Tables } from '@/lib/types';
+
+type ProfileRow = Tables<'profiles'>;
 
 /**
  * Modal para editar el perfil del usuario (nombre y avatar).
@@ -20,7 +23,8 @@ export default function EditProfileModal({
   userId: string;
 }) {
   const { user: authUser } = useUser();
-  const { data: profile, mutate } = useProfile(userId);
+  const profileResp = useProfile(userId) as unknown as { data: ProfileRow | null; mutate: () => Promise<any> };
+  const { data: profile, mutate } = profileResp;
   const [name, setName] = useState('');
   const [avatarSeed, setAvatarSeed] = useState('');
   const [email, setEmail] = useState('');
@@ -28,13 +32,14 @@ export default function EditProfileModal({
 
   useEffect(() => {
     if (profile) {
-      setName(profile.full_name ?? '');
+      setName(profile?.full_name ?? '');
       setEmail(authUser?.email ?? '');
       // Genera un seed único para el avatar
-      const seed = (profile.full_name || authUser?.email || Math.random().toString(36)).slice(0, 16);
+      const base = profile?.full_name || authUser?.email || Math.random().toString(36);
+      const seed = base.slice(0, 16);
       setAvatarSeed(seed);
     }
-  }, [profile, open]);
+  }, [profile, open, authUser]);
 
   const save = async () => {
     setLoading(true);
