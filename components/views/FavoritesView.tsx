@@ -5,6 +5,7 @@ import SoundPreviewModal from '../shared/SoundPreviewModal';
 import AnimatedBanner from '../shared/AnimatedBanner';
 import SortButton, { SortOption } from '../search/SortButton';
 import { Ad } from '../../lib/types';
+import type { Sound } from '@/lib/types';
 import { motion } from 'framer-motion';
 import { Heart } from 'lucide-react';
 
@@ -180,12 +181,29 @@ const mockAds: Ad[] = [
   }
 ];
 
+// Mapper Ad -> Sound para usar SoundCard/Modal
+const adToSound = (ad: Ad): Sound => ({
+  sound_id: ad.id,
+  title: ad.title,
+  author: ad.brand,
+  region: 'ALL',
+  rank: null,
+  cover_url: ad.thumbnail,
+  preview_url: null,
+  play_url: null,
+  duration: null,
+  video_count: null,
+  user_count: ad.views ?? 0,
+  fetched_at: undefined,
+  tiktok_url: null,
+});
+
 const FAVORITES_STORAGE_KEY = 'adspy_favorites';
 
 const FavoritesView: React.FC = () => {
   const [favorites, setFavorites] = useState<Ad[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedAd, setSelectedAd] = useState<Ad | null>(null);
+  const [selectedAd, setSelectedAd] = useState<any | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedSort, setSelectedSort] = useState<SortOption>('date_newest');
   
@@ -260,19 +278,13 @@ const FavoritesView: React.FC = () => {
 
     // Update selected ad if it's currently open
     if (selectedAd && selectedAd.id === id) {
-      setSelectedAd(prev => prev ? { ...prev, isFavorite: false } : null);
+      setSelectedAd((prev: any) => prev ? { ...prev, isFavorite: false } : null);
     }
   };
 
-  const handleCardClick = (ad: Ad) => {
-    setSelectedAd(ad);
+  const handleSoundClick = (sound: Sound) => {
+    setSelectedAd(sound);
     setIsPreviewOpen(true);
-  };
-
-  const handleViewDetails = (id: string) => {
-    // Here you would navigate to a detailed view page
-    console.log('View details for ad:', id);
-    setIsPreviewOpen(false);
   };
   
   return (
@@ -350,11 +362,11 @@ const FavoritesView: React.FC = () => {
             transition={{ staggerChildren: 0.05 }}
           >
             {favorites.map((ad, index) => (
-              <SoundCard 
-                key={ad.id} 
-                ad={ad} 
+              <SoundCard
+                key={ad.id}
+                sound={adToSound(ad)}
                 onToggleFavorite={toggleFavorite}
-                onCardClick={handleCardClick}
+                onCardClick={handleSoundClick}
                 index={index}
               />
             ))}
