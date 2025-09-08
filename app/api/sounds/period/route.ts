@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
+export const dynamic = 'force-dynamic';
+
 // Utilidad para ISO compacto (mantiene tu estilo anterior)
 function toIso(date: Date) {
   return date.toISOString().slice(0, 19) + 'Z';
@@ -22,9 +24,9 @@ function mergeWithMeta(base: any[], metaRows: any[], regionNorm: string) {
       region: b.region || m.region || regionNorm,
       // rank del RPC, si no, rank de trending
       rank:
-        (typeof b.best_rank === 'number' ? b.best_rank : null) ??
-        (typeof b.rank === 'number' ? b.rank : null) ??
-        (typeof m.rank === 'number' ? m.rank : null) ??
+        (typeof b.best_rank === 'number' ? b.best_rank : null) ||
+        (typeof b.rank === 'number' ? b.rank : null) ||
+        (typeof m.rank === 'number' ? m.rank : null) ||
         null,
 
       // ▼▼ añadido: contador real de usos ▼▼
